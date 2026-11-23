@@ -1,0 +1,84 @@
+RA = 510108  ->  D1=5, D2=1, D3=0, D4=1, D5=0, D6=8
+Origem = S0 | Destino = S7 (D6 = 8 é par)
+
+== Pesos (km) ==
+   e1  (S0, S1) = 13
+   e2  (S0, S2) = 15
+   e3  (S1, S2) = 9
+   e4  (S1, S3) = 12
+   e5  (S2, S4) = 15
+   e6  (S2, S5) = 14
+   e7  (S3, S4) = 10
+   e8  (S3, S6) = 12
+   e9  (S4, S5) = 7
+  e10  (S4, S7) = 17
+  e11  (S5, S7) = 24
+  e12  (S6, S7) = 9
+  e13  (S1, S4) = 20
+
+== Matriz de adjacência 8x8 (— = NULO) ==
+          S0    S1    S2    S3    S4    S5    S6    S7
+    S0     —    13    15     —     —     —     —     —
+    S1    13     —     9    12    20     —     —     —
+    S2    15     9     —     —    15    14     —     —
+    S3     —    12     —     —    10     —    12     —
+    S4     —    20    15    10     —     7     —    17
+    S5     —     —    14     —     7     —     —    24
+    S6     —     —     —    12     —     —     —     9
+    S7     —     —     —     —    17    24     9     —
+Simétrica? True | Todos os pesos >= 0? True
+
+== Teste de mesa (Dijkstra a partir de S0, até fechar o destino) ==
+| Iter. | u | L[u] | L[S0] | L[S1] | L[S2] | L[S3] | L[S4] | L[S5] | L[S6] | L[S7] | Antecessores atualizados |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| Inic. | — | — | 0 | ∞ | ∞ | ∞ | ∞ | ∞ | ∞ | ∞ | Inicialização na origem S0 |
+| 1 | S0 | 0 | [0] | 13 | 15 | ∞ | ∞ | ∞ | ∞ | ∞ | Ant[S1] = S0 (0 + 13 = 13), Ant[S2] = S0 (0 + 15 = 15) |
+| 2 | S1 | 13 | [0] | [13] | 15 | 25 | 33 | ∞ | ∞ | ∞ | Ant[S3] = S1 (13 + 12 = 25), Ant[S4] = S1 (13 + 20 = 33) |
+| 3 | S2 | 15 | [0] | [13] | [15] | 25 | 30 | 29 | ∞ | ∞ | Ant[S4] = S2 (15 + 15 = 30), Ant[S5] = S2 (15 + 14 = 29) |
+| 4 | S3 | 25 | [0] | [13] | [15] | [25] | 30 | 29 | 37 | ∞ | Ant[S6] = S3 (25 + 12 = 37) |
+| 5 | S5 | 29 | [0] | [13] | [15] | [25] | 30 | [29] | 37 | 53 | Ant[S7] = S5 (29 + 24 = 53) |
+| 6 | S4 | 30 | [0] | [13] | [15] | [25] | [30] | [29] | 37 | 47 | Ant[S7] = S4 (30 + 17 = 47) |
+| 7 | S6 | 37 | [0] | [13] | [15] | [25] | [30] | [29] | [37] | 46 | Ant[S7] = S6 (37 + 9 = 46) |
+| 8 | S7 | 46 | [0] | [13] | [15] | [25] | [30] | [29] | [37] | [46] | nenhum |
+
+Custo mínimo S0 -> S7: 46 km
+Rota ótima: S0 -> S1 -> S3 -> S6 -> S7
+Ordem de fechamento: S0, S1, S2, S3, S5, S4, S6, S7
+
+== Contingência: ramal e5 (S2, S4) removido ==
+| Iter. | u | L[u] | L[S0] | L[S1] | L[S2] | L[S3] | L[S4] | L[S5] | L[S6] | L[S7] | Antecessores atualizados |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| Inic. | — | — | 0 | ∞ | ∞ | ∞ | ∞ | ∞ | ∞ | ∞ | Inicialização na origem S0 |
+| 1 | S0 | 0 | [0] | 13 | 15 | ∞ | ∞ | ∞ | ∞ | ∞ | Ant[S1] = S0 (0 + 13 = 13), Ant[S2] = S0 (0 + 15 = 15) |
+| 2 | S1 | 13 | [0] | [13] | 15 | 25 | 33 | ∞ | ∞ | ∞ | Ant[S3] = S1 (13 + 12 = 25), Ant[S4] = S1 (13 + 20 = 33) |
+| 3 | S2 | 15 | [0] | [13] | [15] | 25 | 33 | 29 | ∞ | ∞ | Ant[S5] = S2 (15 + 14 = 29) |
+| 4 | S3 | 25 | [0] | [13] | [15] | [25] | 33 | 29 | 37 | ∞ | Ant[S6] = S3 (25 + 12 = 37) |
+| 5 | S5 | 29 | [0] | [13] | [15] | [25] | 33 | [29] | 37 | 53 | Ant[S7] = S5 (29 + 24 = 53) |
+| 6 | S4 | 33 | [0] | [13] | [15] | [25] | [33] | [29] | 37 | 50 | Ant[S7] = S4 (33 + 17 = 50) |
+| 7 | S6 | 37 | [0] | [13] | [15] | [25] | [33] | [29] | [37] | 46 | Ant[S7] = S6 (37 + 9 = 46) |
+| 8 | S7 | 46 | [0] | [13] | [15] | [25] | [33] | [29] | [37] | [46] | nenhum |
+
+Nova rota: S0 -> S1 -> S3 -> S6 -> S7 | custo 46 km
+Acréscimo: 0 km (0.00%)
+
+== Prim (MST a partir de S0) ==
+  (S0, S1) = 13
+  (S1, S2) = 9
+  (S1, S3) = 12
+  (S3, S4) = 10
+  (S4, S5) = 7
+  (S3, S6) = 12
+  (S6, S7) = 9
+Custo total da MST: 72 km
+
+== Dijkstra completo a partir de S0 ==
+  S0:   0 km  rota S0
+  S1:  13 km  rota S0 -> S1
+  S2:  15 km  rota S0 -> S2
+  S3:  25 km  rota S0 -> S1 -> S3
+  S4:  30 km  rota S0 -> S2 -> S4
+  S5:  29 km  rota S0 -> S2 -> S5
+  S6:  37 km  rota S0 -> S1 -> S3 -> S6
+  S7:  46 km  rota S0 -> S1 -> S3 -> S6 -> S7
+Soma das distâncias de Dijkstra: 195 km
+Árvore de caminhos mínimos (união das rotas): (S0,S1), (S0,S2), (S1,S3), (S2,S4), (S2,S5), (S3,S6), (S6,S7) | custo de construção 90 km
